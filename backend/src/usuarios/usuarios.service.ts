@@ -4,6 +4,7 @@ import { ActualizarUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsuariosService {
@@ -13,9 +14,21 @@ export class UsuariosService {
     private readonly usuarioRepository: Repository<Usuario>,
   ) {}
 
-  async crearUsuario(crearUsuarioDto: CrearUsuarioDto): Promise <Usuario> {
-    const nuevoUsuario = this.usuarioRepository.create(crearUsuarioDto);
-    return this.usuarioRepository.save(nuevoUsuario);
+  async crearUsuario(crearUsuarioDto: CrearUsuarioDto): Promise<Omit<Usuario, 'password'>> {
+
+    const passwordPlana = crearUsuarioDto.password;
+
+    const passwordHasheada = await bcrypt.hash(passwordPlana, 10);
+
+    const nuevoUsuario = this.usuarioRepository.create({
+      ...crearUsuarioDto,
+      password: passwordHasheada,
+    });
+    await this.usuarioRepository.save(nuevoUsuario);
+
+    const {password, ...usuarioSinPassword } = nuevoUsuario;
+
+    return usuarioSinPassword;
   }
 
   async obtenerTodosLosUsuarios(): Promise<Usuario[]> {
@@ -44,5 +57,14 @@ export class UsuariosService {
   async eliminarUsuario(id: number): Promise<void> {
     const usuario = await this.obtenerUsuarioPorId(id);
     await this.usuarioRepository.remove(usuario);
+  }
+
+  //Busca un usuario por su email
+  async encontrarPorEmail(email: string): Promise<Usuario | null> {
+    return this.usuarioRepository
+    .createQueryBuilder('usuario')
+    .addSelect('usuario.password')
+    .where('usuario.email = :email', {email})
+    .getOne();
   }
 }
