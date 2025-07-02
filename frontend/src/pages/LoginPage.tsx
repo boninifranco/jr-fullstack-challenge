@@ -61,7 +61,7 @@ function LoginPage() {
             </Form.Group>
             
             <div className="d-grid">
-              <Button variant="primary" type="submit">
+              <Button variant="danger" type="submit">
                 Ingresar
               </Button>
             </div>
