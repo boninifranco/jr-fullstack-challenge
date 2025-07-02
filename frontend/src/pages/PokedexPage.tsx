@@ -26,7 +26,7 @@ export interface PokemonDetail {
 }
 
 function PokedexPage() {
-  //Constantes
+  //Estados para la lista, carga, errores, desplazamiento y constante de limite
   const [listaPokemon, setListaPokemon] = useState<PokemonDetail[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
