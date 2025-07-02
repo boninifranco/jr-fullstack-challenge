@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
-  imports: [UsuariosModule, TypeOrmModule.forRoot({
+  imports: [UsuariosModule, SeedModule, TypeOrmModule.forRoot({
     type: 'mysql',
     host: 'localhost',
     port: 3306,
@@ -15,7 +16,7 @@ import { AuthModule } from './auth/auth.module';
     database: 'challenge_db',
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: true,
-  }), AuthModule],
+  }), AuthModule, SeedModule],
   controllers: [AppController],
   providers: [AppService],
 })
